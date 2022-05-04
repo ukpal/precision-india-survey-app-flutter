@@ -6,7 +6,6 @@ import 'package:sur_app/job_list_screen.dart';
 import 'package:sur_app/logout.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:sur_app/utility/app_url.dart';
 
@@ -18,8 +17,6 @@ class SurveyScreen extends StatefulWidget {
 }
 
 class _SurveyScreenState extends State<SurveyScreen> {
-  final lat_controller = TextEditingController();
-  final long_controller = TextEditingController();
   final from_date = TextEditingController();
   final to_date = TextEditingController();
   var formattedDate = '';
@@ -30,41 +27,6 @@ class _SurveyScreenState extends State<SurveyScreen> {
   _SurveyScreenState() {
     formattedDate = formatter.format(now);
     // to_date.text=formattedDate;
-  }
-
-  Future<Position> _getGeoLocationPosition(BuildContext context) async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      // await Geolocator.openLocationSettings();
-      // return Future.error('Location services are disabled.');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Turn on your location")));
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
-    return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
   }
 
   getPref() async {
@@ -115,7 +77,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => JobListScreen(jobs: jobs,lat: lat_controller.text, long: long_controller.text,)));
+                  builder: (context) => JobListScreen(jobs: jobs)));
         }
       } else {
         print(" ${resposne['message']}");
@@ -173,72 +135,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
                     SizedBox(
                       height: 25,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      // ignore: prefer_const_literals_to_create_immutables
-                      children: [
-                        Text(
-                          "Location: ",
-                          style: TextStyle(
-                              fontSize: 25,
-                              color: Color.fromARGB(185, 0, 0, 0),
-                              fontWeight: FontWeight.w600),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: GestureDetector(
-                            child: Icon(
-                              Icons.location_pin,
-                              size: 40,
-                              color: Color(0xffFF574D),
-                            ),
-                            onTap: () async {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              Position position =
-                                  await _getGeoLocationPosition(context);
-                              // print('Lat: ${position.latitude} , Long: ${position.longitude}');
-                              print(position.latitude);
-                              setState(() {
-                                isLoading = false;
-                                lat_controller.text =
-                                    position.latitude.toStringAsFixed(3);
-                                long_controller.text =
-                                    position.longitude.toStringAsFixed(3);
-                              });
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                    // ignore: prefer_const_literals_to_create_immutables
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: TextField(
-                        controller: lat_controller,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            border: OutlineInputBorder(),
-                            labelText: 'latitude'),
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: TextField(
-                        controller: long_controller,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            border: OutlineInputBorder(),
-                            labelText: 'longitude'),
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
+                    
                     SizedBox(
                       height: 25,
                     ),

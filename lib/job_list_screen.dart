@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, avoid_print, must_be_immutable
+// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, avoid_print, must_be_immutable, prefer_const_constructors_in_immutables
 
 // import 'dart:html';
 
@@ -12,9 +12,7 @@ import 'package:sur_app/utility/app_url.dart';
 
 class JobListScreen extends StatefulWidget {
   final List jobs;
-  var lat;
-  var long;
-  JobListScreen({Key? key, required this.jobs,  this.lat, this.long}) : super(key: key);
+  JobListScreen({Key? key, required this.jobs}) : super(key: key);
   @override
   State<JobListScreen> createState() => _JobListScreenState();
 }
@@ -29,8 +27,6 @@ class _JobListScreenState extends State<JobListScreen> {
   void initState() {
     super.initState();
     j = widget.jobs;
-    lat=widget.lat;
-    long=widget.long;
     // print(widget.lat);
   }
 
@@ -61,7 +57,7 @@ class _JobListScreenState extends State<JobListScreen> {
         // var details = resposne['details'];
         isLoading = false;
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => DetailsScreen(data: resposne,lat: lat,long: long,)));
+            MaterialPageRoute(builder: (context) => DetailsScreen(data: resposne)));
       } else {
         print(" ${resposne['message']}");
       }
