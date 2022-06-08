@@ -27,7 +27,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Map details = {};
   List machines = [];
   final amount = TextEditingController();
-  var machineId;
+  final remarks = TextEditingController();
+  String? machineId;
   var jobCompleteStatus = 1;
 
   @override
@@ -35,7 +36,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
     super.initState();
     details = widget.data['details'];
     machines = widget.data['machines'];
-    // print(widget.data['details']);
+    machineId = (details['machine_id'] == null)
+        ? '3'
+        : details['machine_id'].toString();
+    // machineId = details['machine_id'].toString();
+    lat_controller.text = details['latitude'] ?? '';
+    long_controller.text = details['longitude'] ?? '';
+    amount.text=0.toString();
+    // print(widget.data['machines']);
     // print(widget.lat);
   }
 
@@ -90,7 +98,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
         "amount": amount.toString(),
         "latitude": lat_controller.text.toString(),
         "longitude": long_controller.text.toString(),
-        "job_complete_status": jobCompleteStatus.toString()
+        "job_complete_status": jobCompleteStatus.toString(),
+        "remarks": remarks.text.toString()
       },
       headers: {
         "Accept": "application/json",
@@ -227,9 +236,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               setState(() {
                                 isLoading = false;
                                 lat_controller.text =
-                                    position.latitude.toStringAsFixed(3);
+                                    position.latitude.toStringAsFixed(5);
                                 long_controller.text =
-                                    position.longitude.toStringAsFixed(3);
+                                    position.longitude.toStringAsFixed(5);
                               });
                             },
                           ),
@@ -266,17 +275,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       padding: const EdgeInsets.only(top: 10.0),
                       child: DropdownButtonFormField2(
                         decoration: InputDecoration(
-                          //Add isDense true and zero Padding.
-                          //Add Horizontal padding using buttonPadding and Vertical padding by increasing buttonHeight instead of add Padding here so that The whole TextField Button become clickable, and also the dropdown menu open under The whole TextField Button.
                           isDense: true,
                           contentPadding: EdgeInsets.zero,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5),
                           ),
-                          //Add more decoration as you want here
-                          //Add label If you want but add hint outside the decoration to be aligned in the button perfectly.
                         ),
                         isExpanded: true,
+                        value: machineId.toString(),
                         hint: const Text(
                           'Select Machine',
                           style: TextStyle(fontSize: 18),
@@ -304,7 +310,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 ))
                             .toList(),
                         onChanged: (value) {
-                          machineId = value;
+                          machineId = value.toString();
                         },
                       ),
                     ),
@@ -498,6 +504,22 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 18.0),
+                      child: TextField(
+                        maxLines: 3,
+                        controller: remarks,
+                        decoration: InputDecoration(
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                          border: OutlineInputBorder(),
+                          // labelText: 'Remarks',
+                          hintText: 'enter your remarks here',
+                          // floatingLabelBehavior: FloatingLabelBehavior.always
+                        ),
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 18.0),
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -551,8 +573,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           textColor: Colors.white,
                           color: Color(0xffFF574D),
                           onPressed: () {
-                            // print(machineId);
-                            if (machineId != null) {
+                            print(amount.toString());
+                            if (machineId != '3') {
                               showDialog<String>(
                                 context: context,
                                 builder: (BuildContext context) => AlertDialog(
@@ -561,24 +583,27 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       : Text('selected job status: Complete'),
                                   actions: <Widget>[
                                     TextButton(
+                                      child: const Text('Cancel'),
                                       onPressed: () =>
                                           Navigator.pop(context, 'OK'),
-                                      child: const Text('Cancel'),
                                     ),
                                     TextButton(
+                                      child: const Text('OK'),
                                       onPressed: () {
                                         setState(() {
+                                          Navigator.pop(context);
                                           isLoading = true;
                                         });
-                                        if (amount.text == '') {
-                                          updateJobDetails(
-                                              details['id'], machineId, 0);
-                                        } else {
-                                          updateJobDetails(details['id'],
+                                        updateJobDetails(details['id'],
                                               machineId, amount.text);
-                                        }
+                                        // if (amount.text == '') {
+                                        //   updateJobDetails(
+                                        //       details['id'], machineId, 0);
+                                        // } else {
+                                        //   updateJobDetails(details['id'],
+                                        //       machineId, amount.text);
+                                        // }
                                       },
-                                      child: const Text('OK'),
                                     ),
                                   ],
                                 ),
