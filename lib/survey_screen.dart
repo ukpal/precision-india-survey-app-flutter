@@ -64,7 +64,8 @@ class _SurveyScreenState extends State<SurveyScreen> {
                 'No Jobs Available',
                 style: TextStyle(color: Colors.red),
               ),
-              content: const Text('You don\'t have any open jobs within the dates'),
+              content:
+                  const Text('You don\'t have any open jobs within the dates'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(context, 'OK'),
@@ -102,10 +103,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
                   });
                   logout(context);
                 },
-                child: Icon(
-                  Icons.logout,
-                  size: 26.0,
-                ),
+                child: Center(child: Text("LOGOUT")),
               )),
         ],
       ),
@@ -135,7 +133,6 @@ class _SurveyScreenState extends State<SurveyScreen> {
                     SizedBox(
                       height: 25,
                     ),
-                    
                     SizedBox(
                       height: 25,
                     ),
@@ -149,40 +146,35 @@ class _SurveyScreenState extends State<SurveyScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
                       child: TextField(
-                        controller: from_date,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            suffixIcon: Icon(Icons.calendar_today),
-                            border: OutlineInputBorder(),
-                            labelText: 'from'),
-                        style: TextStyle(fontSize: 18),
-                        onTap: () async {
-                          DateTime? pickedDate = await showDatePicker(
+                          keyboardType: TextInputType.none,
+                          controller: from_date,
+                          decoration: InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 10),
+                              suffixIcon: Icon(Icons.calendar_today),
+                              border: OutlineInputBorder(),
+                              labelText: 'from'),
+                          style: TextStyle(fontSize: 18),
+                          onTap: () {
+                            showDialog<String>(
                               context: context,
-                              initialDate: DateTime.now(),
-                              firstDate: DateTime(
-                                  2000), //DateTime.now() - not to allow to choose before today.
-                              lastDate: DateTime(2101));
-
-                          if (pickedDate != null) {
-                            print(
-                                pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                            String formattedDate =
-                                DateFormat('yyyy-MM-dd').format(pickedDate);
-                            print(
-                                formattedDate); //formatted date output using intl package =>  2021-03-16
-                            //you can implement different kind of Date Format here according to your requirement
-
-                            setState(() {
-                              from_date.text =
-                                  formattedDate; //set output date to TextField value.
-                            });
-                          } else {
-                            print("Date is not selected");
-                          }
-                        },
-                      ),
+                              builder: (BuildContext context) => AlertDialog(
+                                  content: SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.height / 2,
+                                child: CalendarDatePicker(
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(
+                                        2000), //DateTime.now() - not to allow to choose before today.
+                                    lastDate: DateTime(2101),
+                                    onDateChanged: (newValue) {
+                                      from_date.text = DateFormat('yyyy-MM-dd')
+                                          .format(newValue);
+                                      Navigator.pop(context, 'OK');
+                                    }),
+                              )),
+                            );
+                          }),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -190,33 +182,54 @@ class _SurveyScreenState extends State<SurveyScreen> {
                         controller: to_date,
                         decoration: InputDecoration(
                             contentPadding: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
+                                vertical: 8, horizontal: 10),
                             suffixIcon: Icon(Icons.calendar_today),
                             border: OutlineInputBorder(),
                             labelText: 'to'),
                         style: TextStyle(fontSize: 18),
-                        onTap: () async {
-                          DateTime? pickedDate = await showDatePicker(
-                              context: context,
-                              initialDate: DateTime.now(),
-                              firstDate: DateTime(
-                                  2000), //DateTime.now() - not to allow to choose before today.
-                              lastDate: DateTime(2101));
+                        // onTap: () async {
+                        //   DateTime? pickedDate = await showDatePicker(
+                        //       context: context,
+                        //       initialDate: DateTime.now(),
+                        //       firstDate: DateTime(
+                        //           2000), //DateTime.now() - not to allow to choose before today.
+                        //       lastDate: DateTime(2101));
+                        //   // print(pickedDate);
 
-                          if (pickedDate != null) {
-                            // print(pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                            String formattedDate =
-                                DateFormat('yyyy-MM-dd').format(pickedDate);
-                            // print(formattedDate); //formatted date output using intl package =>  2021-03-16
-                            //you can implement different kind of Date Format here according to your requirement
+                        //   if (pickedDate != null) {
+                        //     // print(pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                        //     String formattedDate =
+                        //         DateFormat('yyyy-MM-dd').format(pickedDate);
+                        //     // print(formattedDate); //formatted date output using intl package =>  2021-03-16
+                        //     //you can implement different kind of Date Format here according to your requirement
 
-                            setState(() {
-                              to_date.text =
-                                  formattedDate; //set output date to TextField value.
-                            });
-                          } else {
-                            print("Date is not selected");
-                          }
+                        //     setState(() {
+                        //       to_date.text =
+                        //           formattedDate; //set output date to TextField value.
+                        //     });
+                        //   } else {
+                        //     print("Date is not selected");
+                        //   }
+                        // },
+                        onTap: () {
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                                content: SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height / 2,
+                              child: CalendarDatePicker(
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(
+                                      2000), //DateTime.now() - not to allow to choose before today.
+                                  lastDate: DateTime(2101),
+                                  onDateChanged: (newValue) {
+                                    to_date.text = DateFormat('yyyy-MM-dd')
+                                        .format(newValue);
+                                    Navigator.pop(context, 'OK');
+                                  }),
+                            )),
+                          );
                         },
                       ),
                     ),
@@ -225,7 +238,6 @@ class _SurveyScreenState extends State<SurveyScreen> {
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: 55,
-                      
                         child: RaisedButton(
                           textColor: Colors.white,
                           color: Color(0xffFF574D),
@@ -242,11 +254,37 @@ class _SurveyScreenState extends State<SurveyScreen> {
                           ),
                         ),
                       ),
-                    )
+                    ),
+                    // CalendarDatePicker(
+                    //     initialDate: DateTime.now(),
+                    //     firstDate: DateTime(
+                    //         2000), //DateTime.now() - not to allow to choose before today.
+                    //     lastDate: DateTime(2101),
+                    //     onDateChanged: (newDate) {
+                    //       print("$newDate");
+                    //     })
                   ],
                 ),
               ),
             ),
     );
+  }
+
+  String customDatePicker() {
+    var date = '';
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: CalendarDatePicker(
+            initialDate: DateTime.now(),
+            firstDate: DateTime(
+                2000), //DateTime.now() - not to allow to choose before today.
+            lastDate: DateTime(2101),
+            onDateChanged: (newValue) {
+              date = newValue.toString();
+            }),
+      ),
+    );
+    return date;
   }
 }

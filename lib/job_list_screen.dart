@@ -83,10 +83,7 @@ class _JobListScreenState extends State<JobListScreen> {
                   });
                   logout(context);
                 },
-                child: Icon(
-                  Icons.logout,
-                  size: 26.0,
-                ),
+                child: Center(child: Text("LOGOUT")),
               )),
         ],
       ),

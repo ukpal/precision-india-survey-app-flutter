@@ -37,12 +37,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
     details = widget.data['details'];
     machines = widget.data['machines'];
     machineId = (details['machine_id'] == null)
-        ? '3'
+        ? ''
         : details['machine_id'].toString();
     // machineId = details['machine_id'].toString();
     lat_controller.text = details['latitude'] ?? '';
     long_controller.text = details['longitude'] ?? '';
-    amount.text=0.toString();
+    amount.text = 0.toString();
     // print(widget.data['machines']);
     // print(widget.lat);
   }
@@ -170,6 +170,33 @@ class _DetailsScreenState extends State<DetailsScreen> {
     }
   }
 
+  List<DropdownMenuItem> getDynamicMenu() {
+    List<DropdownMenuItem> dynamicMenus = [];
+    dynamicMenus.add(DropdownMenuItem<dynamic>(
+      value: '',
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text('Select a machine'),
+      ),
+    ));
+
+    List<DropdownMenuItem> dynamicMachineMenus = machines
+        .map((item) => DropdownMenuItem<String>(
+              value: item['id'].toString(),
+              child: Text(
+                item['name'].toString(),
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ))
+        .toList();
+
+    dynamicMenus.addAll(dynamicMachineMenus);
+
+    return dynamicMenus;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -187,10 +214,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   });
                   logout(context);
                 },
-                child: Icon(
-                  Icons.logout,
-                  size: 26.0,
-                ),
+                child: Center(child: Text("LOGOUT")),
               )),
         ],
       ),
@@ -273,7 +297,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 10.0),
-                      child: DropdownButtonFormField2(
+                      child: DropdownButtonFormField2<dynamic>(
                         decoration: InputDecoration(
                           isDense: true,
                           contentPadding: EdgeInsets.zero,
@@ -298,17 +322,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         dropdownDecoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        items: machines
-                            .map((item) => DropdownMenuItem<String>(
-                                  value: item['id'].toString(),
-                                  child: Text(
-                                    item['name'].toString(),
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ))
-                            .toList(),
+                        items: getDynamicMenu(),
                         onChanged: (value) {
                           machineId = value.toString();
                         },
@@ -573,41 +587,53 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           textColor: Colors.white,
                           color: Color(0xffFF574D),
                           onPressed: () {
-                            print(amount.toString());
-                            if (machineId != '3') {
-                              showDialog<String>(
-                                context: context,
-                                builder: (BuildContext context) => AlertDialog(
-                                  content: (jobCompleteStatus == 1)
-                                      ? Text('selected job status: Running')
-                                      : Text('selected job status: Complete'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: const Text('Cancel'),
-                                      onPressed: () =>
-                                          Navigator.pop(context, 'OK'),
-                                    ),
-                                    TextButton(
-                                      child: const Text('OK'),
-                                      onPressed: () {
-                                        setState(() {
-                                          Navigator.pop(context);
-                                          isLoading = true;
-                                        });
-                                        updateJobDetails(details['id'],
+                            // print(amount.toString());
+                            if (machineId != '') {
+                              if (lat_controller.text == '' ||
+                                  long_controller.text == '') {
+                                showDialog<String>(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      AlertDialog(
+                                    content: Text('Incorrect Location'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, 'OK'),
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                showDialog<String>(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      AlertDialog(
+                                    content: (jobCompleteStatus == 1)
+                                        ? Text('selected job status: Running')
+                                        : Text('selected job status: Complete'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: const Text('Cancel'),
+                                        onPressed: () =>
+                                            Navigator.pop(context, 'OK'),
+                                      ),
+                                      TextButton(
+                                        child: const Text('OK'),
+                                        onPressed: () {
+                                          setState(() {
+                                            Navigator.pop(context);
+                                            isLoading = true;
+                                          });
+                                          updateJobDetails(details['id'],
                                               machineId, amount.text);
-                                        // if (amount.text == '') {
-                                        //   updateJobDetails(
-                                        //       details['id'], machineId, 0);
-                                        // } else {
-                                        //   updateJobDetails(details['id'],
-                                        //       machineId, amount.text);
-                                        // }
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
                             } else {
                               showDialog<String>(
                                 context: context,
